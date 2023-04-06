@@ -99,29 +99,36 @@ class Hangman:
         self.wrongGuessCnt = 0
         self.isInPhrase = False
         self.phraseGuess = ''
+        self.fullPhrase = phrase
         self.phrase = phrase.split()
     
     def incWrongCnt(self):
         self.wrongGuessCnt += 1
 
-    def phraseUpdate(self, newChar):
+    def phraseUpdate(self, guess):
         self.isInPhrase = False
-        self.phraseGuess = ''
-        for word in self.phrase:
-            if newChar in word:
-                self.isInPhrase = True
-            for char in word:
-                if char in self.list:
-                    self.phraseGuess += char + ' '
-                else:
-                    self.phraseGuess += '_ '
-            self.phraseGuess += '  '
+        if len(guess) > 1:
+            if guess == self.fullPhrase:
+                    self.phraseGuess = guess
+                    self.isInPhrase = True
+        elif len(guess) == 1:
+            self.phraseGuess = ''
+            for word in self.phrase:
+                if guess in word:
+                    self.isInPhrase = True
+                for char in word:
+                    if char in self.list:
+                        self.phraseGuess += char + ' '
+                    else:
+                        self.phraseGuess += '_ '
+                self.phraseGuess += '  '
         
         
         if not self.isInPhrase:
             self.incWrongCnt()
         print(hangmanElementsList[self.wrongGuessCnt])
         print(self.phraseGuess)
+        print(self.list)        
     
     def checkGame(self):
         if not '_' in self.phraseGuess:            
@@ -131,27 +138,29 @@ class Hangman:
             print('You lost')
             return True
 
-    def addLetter(self):
+    def addGuess(self):
         print(pause)
-        char = input('Guess the letter: ')
+        guess = input('Guess the letter or phrase: ')
         while True:
-            if not re.match(r'^[a-zA-Z]+$', char):
-                char = input('Please use letter: ')
-            elif len(char) > 1:
-                char = input('Please use single letter: ')
-            elif char in self.list:                
-                char = input('Letter already used, use another: ')                    
+            if not re.match(r'^[a-zA-Z]+$', guess):
+                guess = input('Please use letter: ')
+            elif len(guess) > 1:
+                self.phraseUpdate(guess)
+                break
+            elif guess in self.list:                
+                guess = input('Letter already used, use another: ')                    
             else:
-                self.list.append(char)  
-                self.phraseUpdate(char)
-                print(self.list)
+                self.list.append(guess)  
+                self.phraseUpdate(guess)
                 break
 
 
 if __name__ == '__main__':
-    phrase = getpass.getpass('Input phrase to guess ')
+    phrase = getpass.getpass('Input phrase to guess (only letters) ')
+    while not re.match(r'^[a-zA-Z]+$', phrase):
+        phrase = getpass.getpass('Input phrase to guess (only letters) ')
     game = Hangman(phrase)
     while True:
-        game.addLetter()
+        game.addGuess()
         if game.checkGame():
             break
