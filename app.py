@@ -101,9 +101,17 @@ class Hangman:
         self.phraseGuess = ''
         self.fullPhrase = phrase
         self.phrase = phrase.split()
+        self.setUp()
     
     def incWrongCnt(self):
         self.wrongGuessCnt += 1
+
+    def setUp(self):
+        for word in self.phrase:
+            for char in word:
+                self.phraseGuess += '_ '
+            self.phraseGuess += '  '
+        print(self.phraseGuess)
 
     def phraseUpdate(self, guess):
         self.isInPhrase = False
@@ -128,7 +136,8 @@ class Hangman:
             self.incWrongCnt()
         print(hangmanElementsList[self.wrongGuessCnt])
         print(self.phraseGuess)
-        print(self.list)        
+        print(self.list)
+        print(pause)        
     
     def checkGame(self):
         if not '_' in self.phraseGuess:            
@@ -139,27 +148,26 @@ class Hangman:
             return True
 
     def addGuess(self):
-        print(pause)
         guess = input('Guess the letter or phrase: ')
         while True:
             if not re.match(r'^[a-zA-Z]+$', guess):
                 guess = input('Please use letter: ')
             elif len(guess) > 1:
-                self.phraseUpdate(guess)
+                self.phraseUpdate(guess.lower())
                 break
             elif guess in self.list:                
                 guess = input('Letter already used, use another: ')                    
             else:
-                self.list.append(guess)  
-                self.phraseUpdate(guess)
+                self.list.append(guess.lower())  
+                self.phraseUpdate(guess.lower())
                 break
 
 
 if __name__ == '__main__':
     phrase = getpass.getpass('Input phrase to guess (only letters) ')
-    while not re.match(r'^[a-zA-Z]+$', phrase):
+    while not re.match(r'^[a-zA-Z ]+$', phrase):
         phrase = getpass.getpass('Input phrase to guess (only letters) ')
-    game = Hangman(phrase)
+    game = Hangman(phrase.lower())
     while True:
         game.addGuess()
         if game.checkGame():
