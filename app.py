@@ -136,7 +136,8 @@ class Hangman:
         while True:
             if not re.match(r'^[a-zA-Z]+$', guess):
                 guess = input('Please use letter: ')
-            elif len(guess) > 1:
+            elif len(guess) > 1:                
+                self.list.append(guess.lower()) 
                 self.phrase_update(guess.lower())
                 break
             elif guess in self.list:                
@@ -145,12 +146,18 @@ class Hangman:
                 self.list.append(guess.lower())  
                 self.phrase_update(guess.lower())
                 break
+        
+        
         if self.end_game:
             print(self.full_phrase)
             print(self.end_game)
             return True
         else:
             self.print_phrase()
+            if self.end_game:
+                print(self.full_phrase)
+                print(self.end_game)
+                return True
             print(self.list)
             print(pause)
             return False
